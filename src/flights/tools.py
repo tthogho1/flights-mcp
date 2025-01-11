@@ -132,8 +132,8 @@ async def search_flights(params: FlightSearch) -> str:
             'offers': []
         }
         
-        # Limit to top 5 offers
-        for offer in list(response.get('offers', []))[:5]:
+        # Get all offers (remove the limit)
+        for offer in response.get('offers', []):  # Removed the [:5] to get all offers
             offer_details = {
                 'offer_id': offer.get('id'),
                 'price': {
