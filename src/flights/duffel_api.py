@@ -84,33 +84,58 @@ class Client:
                                  slices: List[Dict],
                                  cabin_class: str = "economy",
                                  adult_count: int = 1,
-                                 max_connections: int = 1,
+                                 max_connections: int = None,
                                  return_offers: bool = True,
                                  supplier_timeout: int = 15000) -> Dict:
         """Create a flight offer request with caching."""
-        cache_key = self._cache_key(slices, cabin_class, adult_count)
-        
-        # Check cache first
-        if cache_key in self._cache:
-            cached_data = self._cache[cache_key]
-            # Cache for 5 minutes
-            if (datetime.now() - cached_data['timestamp']).total_seconds() < 300:
-                self.logger.info("Returning cached response")
-                return cached_data['response']
-        
-        # If not in cache or expired, make the API call
-        response = await self._create_offer_request(
-            slices, cabin_class, adult_count, 
-            max_connections, return_offers, supplier_timeout
-        )
-        
-        # Cache the response
-        self._cache[cache_key] = {
-            'response': response,
-            'timestamp': datetime.now()
-        }
-        
-        return response
+        try:
+            # Build request data
+            data = {
+                "data": {
+                    "slices": slices,
+                    "cabin_class": cabin_class,
+                    "passengers": [{"type": "adult"} for _ in range(adult_count)],
+                }
+            }
+
+            # Add max_connections if specified
+            if max_connections is not None:
+                data["data"]["max_connections"] = max_connections
+
+            # Query parameters
+            params = {
+                "return_offers": str(return_offers).lower(),
+                "supplier_timeout": supplier_timeout
+            }
+
+            cache_key = self._cache_key(slices, cabin_class, adult_count)
+            
+            # Check cache first
+            if cache_key in self._cache:
+                cached_data = self._cache[cache_key]
+                # Cache for 5 minutes
+                if (datetime.now() - cached_data['timestamp']).total_seconds() < 300:
+                    self.logger.info("Returning cached response")
+                    return cached_data['response']
+            
+            # If not in cache or expired, make the API call
+            response = await self._create_offer_request(
+                slices, cabin_class, adult_count, 
+                max_connections, return_offers, supplier_timeout
+            )
+            
+            # Cache the response
+            self._cache[cache_key] = {
+                'response': response,
+                'timestamp': datetime.now()
+            }
+            
+            return response
+
+        except Exception as e:
+            error_msg = f"Error creating offer request: {str(e)}"
+            self.logger.error(error_msg)
+            raise
 
     async def _create_offer_request(self,
                                  slices: List[Dict],
