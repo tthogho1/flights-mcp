@@ -1,61 +1,30 @@
 """Flight search tools using Duffel API."""
 
 import logging
-from datetime import datetime
-from typing import List, Literal, Dict
+from typing import Dict
 import json
 from mcp.server.fastmcp import FastMCP
-from pydantic import BaseModel, Field
-from . import duffel_api
+
+# Import all models through flight_search
+from ..models.flight_search import (
+    FlightSearch,
+    MultiCityRequest,
+    OfferDetails
+)
+from ..models.time_specs import TimeSpec
+from ..api import DuffelClient
 
 # Set up logging
 logger = logging.getLogger(__name__)
 
 # Initialize FastMCP server and API client
 mcp = FastMCP("find-flights-mcp")
-flight_client = duffel_api.Client(logger)
+flight_client = DuffelClient(logger)
 
-class TimeRange(BaseModel):
-    """Model for time range specification."""
-    from_time: str = Field(..., description="Start time (HH:MM)", pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$")
-    to_time: str = Field(..., description="End time (HH:MM)", pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$")
-
-class FlightSearch(BaseModel):
-    """Model for flight search parameters."""
-    type: str = Field(..., description="Type of flight: 'one_way', 'round_trip', or 'multi_city'")
-    origin: str = Field(..., description="Origin airport code")
-    destination: str = Field(..., description="Destination airport code")
-    departure_date: str = Field(..., description="Departure date (YYYY-MM-DD)")
-    return_date: str | None = Field(None, description="Return date for round trips (YYYY-MM-DD)")
-    departure_time: TimeRange | None = Field(None, description="Preferred departure time range")
-    arrival_time: TimeRange | None = Field(None, description="Preferred arrival time range")
-    cabin_class: str = Field("economy", description="Cabin class (economy, business, first)")
-    adults: int = Field(1, description="Number of adult passengers")
-    max_connections: int = Field(None, description="Maximum number of connections (0 for non-stop)")
-
-class OfferDetails(BaseModel):
-    """Model for getting detailed offer information."""
-    offer_id: str = Field(..., description="The ID of the offer to get details for")
-
-class FlightSegment(BaseModel):
-    """Model for a single flight segment in a multi-city trip."""
-    origin: str = Field(..., description="Origin airport code")
-    destination: str = Field(..., description="Destination airport code") 
-    departure_date: str = Field(..., description="Departure date (YYYY-MM-DD)")
-
-class MultiCityRequest(BaseModel):
-    """Model for multi-city flight search."""
-    type: Literal["multi_city"]
-    segments: List[FlightSegment] = Field(..., min_items=2, description="Flight segments")
-    cabin_class: str = Field("economy", description="Cabin class")
-    adults: int = Field(1, description="Number of adult passengers")
-    max_connections: int = Field(None, description="Maximum number of connections (0 for non-stop)")
-    departure_time: TimeRange | None = Field(None, description="Optional departure time range")
-    arrival_time: TimeRange | None = Field(None, description="Optional arrival time range")
 
 def _create_slice(origin: str, destination: str, date: str, 
-                 departure_time: TimeRange | None = None,
-                 arrival_time: TimeRange | None = None) -> Dict:
+                 departure_time: TimeSpec | None = None,
+                 arrival_time: TimeSpec | None = None) -> Dict:
     """Helper to create a slice with time ranges."""
     slice_data = {
         "origin": origin,
@@ -154,15 +123,16 @@ async def search_flights(params: FlightSearch) -> str:
                     }
                 })
         
-        # Search for offers
-        response = await flight_client.create_offer_request(
-            slices=slices,
-            cabin_class=params.cabin_class,
-            adult_count=params.adults,
-            max_connections=params.max_connections,
-            return_offers=True,
-            supplier_timeout=15000
-        )
+        # Use async context manager
+        async with flight_client as client:
+            response = await client.create_offer_request(
+                slices=slices,
+                cabin_class=params.cabin_class,
+                adult_count=params.adults,
+                max_connections=params.max_connections,
+                return_offers=True,
+                supplier_timeout=15000
+            )
         
         # Format the response
         formatted_response = {
@@ -192,6 +162,8 @@ async def search_flights(params: FlightSearch) -> str:
                         'arrival': segments[-1].get('arriving_at'),    # Last segment arrival
                         'duration': slice.get('duration'),
                         'carrier': segments[0].get('marketing_carrier', {}).get('name'),
+                        'stops': len(segments) - 1,
+                        'stops_description': 'Non-stop' if len(segments) == 1 else f'{len(segments) - 1} stop{"s" if len(segments) - 1 > 1 else ""}',
                         'connections': []
                     }
                     
@@ -220,13 +192,11 @@ async def search_flights(params: FlightSearch) -> str:
 async def get_offer_details(params: OfferDetails) -> str:
     """Get detailed information about a specific flight offer."""
     try:
-        # Get detailed offer information
-        response = await flight_client.get_offer(
-            offer_id=params.offer_id
-        )
-        
-        # Return the complete response
-        return json.dumps(response, indent=2)
+        async with flight_client as client:
+            response = await client.get_offer(
+                offer_id=params.offer_id
+            )
+            return json.dumps(response, indent=2)
             
     except Exception as e:
         logger.error(f"Error getting offer details: {str(e)}", exc_info=True)
@@ -242,67 +212,68 @@ async def search_multi_city(params: MultiCityRequest) -> str:
                 segment.origin,
                 segment.destination,
                 segment.departure_date,
-                None,  # Default to full day if no time range specified
-                None   # Default to full day if no time range specified
+                None,
+                None
             ))
 
-        # Search for offers
-        response = await flight_client.create_offer_request(
-            slices=slices,
-            cabin_class=params.cabin_class,
-            adult_count=params.adults,
-            max_connections=params.max_connections,
-            return_offers=True,
-            supplier_timeout=15000
-        )
+        # Use async context manager with shorter timeout
+        async with flight_client as client:
+            response = await client.create_offer_request(
+                slices=slices,
+                cabin_class=params.cabin_class,
+                adult_count=params.adults,
+                max_connections=params.max_connections,
+                return_offers=True,
+                supplier_timeout=30000  # Increased timeout for multi-city
+            )
         
-        # Format the response
-        formatted_response = {
-            'request_id': response['request_id'],
-            'offers': []
-        }
-        
-        # Get all offers (limit to 10 to manage response size)
-        for offer in response.get('offers', [])[:10]:  # Keep the slice to limit offers
-            offer_details = {
-                'offer_id': offer.get('id'),
-                'price': {
-                    'amount': offer.get('total_amount'),
-                    'currency': offer.get('total_currency')
-                },
-                'slices': []
+            # Format response inside the context
+            formatted_response = {
+                'request_id': response['request_id'],
+                'offers': []
             }
             
-            # Only include essential slice details
-            for slice in offer.get('slices', []):
-                segments = slice.get('segments', [])
-                if segments:  # Check if there are any segments
-                    slice_details = {
-                        'origin': slice['origin']['iata_code'],
-                        'destination': slice['destination']['iata_code'],
-                        'departure': segments[0].get('departing_at'),  # First segment departure
-                        'arrival': segments[-1].get('arriving_at'),    # Last segment arrival
-                        'duration': slice.get('duration'),
-                        'carrier': segments[0].get('marketing_carrier', {}).get('name'),
-                        'connections': []
-                    }
-                    
-                    # Add connection information if there are multiple segments
-                    if len(segments) > 1:
-                        for i in range(len(segments)-1):
-                            connection = {
-                                'airport': segments[i].get('destination', {}).get('iata_code'),
-                                'arrival': segments[i].get('arriving_at'),
-                                'departure': segments[i+1].get('departing_at'),
-                                'duration': segments[i+1].get('duration')
-                            }
-                            slice_details['connections'].append(connection)
-                    
-                    offer_details['slices'].append(slice_details)
+            # Process offers inside the context
+            for offer in response.get('offers', [])[:10]:
+                offer_details = {
+                    'offer_id': offer.get('id'),
+                    'price': {
+                        'amount': offer.get('total_amount'),
+                        'currency': offer.get('total_currency')
+                    },
+                    'slices': []
+                }
+                
+                for slice in offer.get('slices', []):
+                    segments = slice.get('segments', [])
+                    if segments:
+                        slice_details = {
+                            'origin': slice['origin']['iata_code'],
+                            'destination': slice['destination']['iata_code'],
+                            'departure': segments[0].get('departing_at'),
+                            'arrival': segments[-1].get('arriving_at'),
+                            'duration': slice.get('duration'),
+                            'carrier': segments[0].get('marketing_carrier', {}).get('name'),
+                            'stops': len(segments) - 1,
+                            'stops_description': 'Non-stop' if len(segments) == 1 else f'{len(segments) - 1} stop{"s" if len(segments) - 1 > 1 else ""}',
+                            'connections': []
+                        }
+                        
+                        if len(segments) > 1:
+                            for i in range(len(segments)-1):
+                                connection = {
+                                    'airport': segments[i].get('destination', {}).get('iata_code'),
+                                    'arrival': segments[i].get('arriving_at'),
+                                    'departure': segments[i+1].get('departing_at'),
+                                    'duration': segments[i+1].get('duration')
+                                }
+                                slice_details['connections'].append(connection)
+                        
+                        offer_details['slices'].append(slice_details)
+                
+                formatted_response['offers'].append(offer_details)
             
-            formatted_response['offers'].append(offer_details)
-        
-        return json.dumps(formatted_response, indent=2)
+            return json.dumps(formatted_response, indent=2)
             
     except Exception as e:
         logger.error(f"Error searching flights: {str(e)}", exc_info=True)
