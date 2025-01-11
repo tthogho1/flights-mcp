@@ -16,7 +16,7 @@ MCP server for searching and retrieving flight information using Duffel API.
 1. Visit [Duffel Website](https://duffel.com)
 2. Create an account or log in
 3. Navigate to API settings
-4. Generate a new Live API key
+4. Generate a new Live API key (there are two keys, one for testing and one for live, make sure to use the live key)
 
 ### Note on API Usage Limits
 - Check Duffel's current pricing and usage limits
@@ -172,3 +172,24 @@ The service includes robust error handling for:
 - Searches are limited to 50 offers for one-way/round-trip flights
 - Multi-city searches are limited to 10 offers
 - Supplier timeout is set to 15-30 seconds depending on the search type
+
+### Cabin Classes
+Available cabin classes:
+- `economy`: Standard economy class
+- `premium_economy`: Premium economy class
+- `business`: Business class
+- `first`: First class
+
+Example request with cabin class:
+```json
+{
+  "params": {
+    "type": "one_way",
+    "adults": 1,
+    "origin": "SFO",
+    "destination": "LAX",
+    "departure_date": "2025-01-12",
+    "cabin_class": "business"  // Specify desired cabin class
+  }
+}
+```
