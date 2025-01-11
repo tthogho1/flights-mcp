@@ -1,7 +1,7 @@
 """Server initialization for find-flights MCP."""
 
 import logging
-from .tools import mcp
+from .services.search import mcp
 
 # Set up logging
 logger = logging.getLogger(__name__)
