@@ -32,21 +32,25 @@ ENV/
 .vscode/
 *.swp
 *.swo
+.DS_Store
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
 
 # Logs
 *.log
 
-# Mac
-.DS_Store
-.AppleDouble
-.LSOverride
-Icon
-._*
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Project specific
+# Local development
 .python-version
+.env.local
+.env.*.local
+
+# Distribution
+dist/
+build/
+
+# UV
+.uv/
