@@ -1,0 +1,26 @@
+[project]
+name = "find-flights-mcp"
+version = "0.1.0"
+description = "Flight search MCP server using Duffel API"
+requires-python = ">=3.9"
+dependencies = [
+    "httpx",
+    "python-dotenv",
+    "pydantic"
+]
+
+[project.scripts]
+find-flights-mcp = "flights:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/flights"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+pythonpath = ["src"]
