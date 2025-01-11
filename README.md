@@ -139,7 +139,7 @@ Parameters include:
 - `max_connections`: Maximum number of connections
 
 ## Use Cases
-### Example #1: Finding a Flight
+### Some Example (But try it out yourself!)
 You can use these tools to find flights with various complexities:
 - "Find a one-way flight from SFO to NYC on Jan 7 for 2 adults in business class"
 - "Search for a round-trip flight from LAX to London, departing Jan 8 and returning Jan 15"
