@@ -26,6 +26,10 @@ class FlightSearch(BaseModel):
     cabin_class: str = Field("economy", description="Cabin class (economy, business, first)")
     adults: int = Field(1, description="Number of adult passengers")
 
+class OfferDetails(BaseModel):
+    """Model for getting detailed offer information."""
+    offer_id: str = Field(..., description="The ID of the offer to get details for")
+
 @mcp.tool()
 async def search_flights(params: FlightSearch) -> str:
     """Search for flights based on parameters."""
@@ -41,6 +45,10 @@ async def search_flights(params: FlightSearch) -> str:
                 "departure_time": {
                     "from": "00:00",
                     "to": "23:59"
+                },
+                "arrival_time": {
+                    "from": "00:00",
+                    "to": "23:59"
                 }
             }]
         elif params.type == "round_trip":
@@ -54,6 +62,10 @@ async def search_flights(params: FlightSearch) -> str:
                     "departure_time": {
                         "from": "00:00",
                         "to": "23:59"
+                    },
+                    "arrival_time": {
+                        "from": "00:00",
+                        "to": "23:59"
                     }
                 },
                 {
@@ -61,6 +73,10 @@ async def search_flights(params: FlightSearch) -> str:
                     "destination": params.origin,
                     "departure_date": params.return_date,
                     "departure_time": {
+                        "from": "00:00",
+                        "to": "23:59"
+                    },
+                    "arrival_time": {
                         "from": "00:00",
                         "to": "23:59"
                     }
@@ -78,6 +94,10 @@ async def search_flights(params: FlightSearch) -> str:
                 "departure_time": {
                     "from": "00:00",
                     "to": "23:59"
+                },
+                "arrival_time": {
+                    "from": "00:00",
+                    "to": "23:59"
                 }
             })
             
@@ -88,6 +108,10 @@ async def search_flights(params: FlightSearch) -> str:
                     "destination": stop["destination"],
                     "departure_date": stop["departure_date"],
                     "departure_time": {
+                        "from": "00:00",
+                        "to": "23:59"
+                    },
+                    "arrival_time": {
                         "from": "00:00",
                         "to": "23:59"
                     }
@@ -121,15 +145,30 @@ async def search_flights(params: FlightSearch) -> str:
             
             # Only include essential slice details
             for slice in offer.get('slices', []):
-                slice_details = {
-                    'origin': slice['origin']['iata_code'],
-                    'destination': slice['destination']['iata_code'],
-                    'departure': slice.get('departing_at'),
-                    'arrival': slice.get('arriving_at'),
-                    'duration': slice.get('duration'),
-                    'carrier': slice.get('segments', [{}])[0].get('marketing_carrier', {}).get('name')
-                }
-                offer_details['slices'].append(slice_details)
+                segments = slice.get('segments', [])
+                if segments:  # Check if there are any segments
+                    slice_details = {
+                        'origin': slice['origin']['iata_code'],
+                        'destination': slice['destination']['iata_code'],
+                        'departure': segments[0].get('departing_at'),  # First segment departure
+                        'arrival': segments[-1].get('arriving_at'),    # Last segment arrival
+                        'duration': slice.get('duration'),
+                        'carrier': segments[0].get('marketing_carrier', {}).get('name'),
+                        'connections': []
+                    }
+                    
+                    # Add connection information if there are multiple segments
+                    if len(segments) > 1:
+                        for i in range(len(segments)-1):
+                            connection = {
+                                'airport': segments[i].get('destination', {}).get('iata_code'),
+                                'arrival': segments[i].get('arriving_at'),
+                                'departure': segments[i+1].get('departing_at'),
+                                'duration': segments[i+1].get('duration')
+                            }
+                            slice_details['connections'].append(connection)
+                    
+                    offer_details['slices'].append(slice_details)
             
             formatted_response['offers'].append(offer_details)
         
@@ -137,4 +176,20 @@ async def search_flights(params: FlightSearch) -> str:
             
     except Exception as e:
         logger.error(f"Error searching flights: {str(e)}", exc_info=True)
+        raise
+
+@mcp.tool()
+async def get_offer_details(params: OfferDetails) -> str:
+    """Get detailed information about a specific flight offer."""
+    try:
+        # Get detailed offer information
+        response = await flight_client.get_offer(
+            offer_id=params.offer_id
+        )
+        
+        # Return the complete response
+        return json.dumps(response, indent=2)
+            
+    except Exception as e:
+        logger.error(f"Error getting offer details: {str(e)}", exc_info=True)
         raise
