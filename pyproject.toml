@@ -8,6 +8,7 @@ dependencies = [
     "python-dotenv",
     "pydantic"
 ]
+license = "MIT"
 
 [project.scripts]
 find-flights-mcp = "flights:main"

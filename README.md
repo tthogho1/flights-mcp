@@ -166,7 +166,8 @@ The service includes robust error handling for:
 [Add guidelines for contribution, if applicable]
 
 ## License
-[Add license information]
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Performance Notes
 - Searches are limited to 50 offers for one-way/round-trip flights
