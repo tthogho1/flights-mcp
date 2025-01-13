@@ -1,6 +1,8 @@
 # Find Flights MCP Server
 MCP server for searching and retrieving flight information using Duffel API.
 
+https://github.com/user-attachments/assets/c111aa4c-9559-4d74-a2f6-60e322c273d4
+
 ## Why This is Helpful
 While tools like Google Flights work great for simple trips, this tool shines when dealing with complex travel plans. Here's why:
 
