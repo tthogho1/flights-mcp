@@ -21,7 +21,7 @@ Try using duffel_test first to see the power of this tool. If you end up liking 
 You can start with a test API key (`duffel_test`) to try out the functionality with simulated data before going through the full verification process:
 1. Visit [Duffel's registration page](https://app.duffel.com/join)
 2. Create an account (you can select "Personal Use" for Company Name)
-3. Navigate to More > Developer to find your test API key
+3. Navigate to More > Developer to find your test API key (one is already provided)
 
 ### Getting a Live API Key
 To access real flight data, follow these steps:
