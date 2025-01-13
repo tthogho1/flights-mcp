@@ -1,7 +1,15 @@
 # Find Flights MCP Server
 MCP server for searching and retrieving flight information using Duffel API.
 
-Say goodbye to endless calendar clicking and tab juggling. This tool lets you search flights naturally - just describe what you want in natural langauge. Find the best deals across multiple dates, compare flexible travel times, and explore complex routes through simple queries.
+## Why This is Helpful
+While tools like Google Flights work great for simple trips, this tool shines when dealing with complex travel plans. Here's why:
+
+- **Contextual Memory**: Claude remembers all your previous flight searches in the chat, so you don't need to keep multiple tabs open to compare prices
+- **Flexible Date Search**: Easily search across multiple days to find the best prices without manually checking each date
+- **Complex Itineraries**: Perfect for multi-city trips, one-stop flights, or when you need to compare different route options
+- **Natural Conversation**: Just describe what you're looking for - no more clicking through calendar interfaces or juggling search parameters
+
+Think of it as having a travel agent in your chat who remembers everything you've discussed and can instantly search across dates and routes.
 
 ## Features
 - Search for flights between multiple destinations
