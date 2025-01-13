@@ -15,6 +15,8 @@ MCP server for searching and retrieving flight information using Duffel API.
 ## Getting Your Duffel API Key
 Duffel requires account verification and payment information setup, but this MCP server only uses the API for searching flights - no actual bookings or charges will be made to your account.
 
+Try using duffel_test first to see the power of this tool. If you end up liking it, you can go through the verification process below to use the live key.
+
 ### Test Mode First (Recommended)
 You can start with a test API key (`duffel_test`) to try out the functionality with simulated data before going through the full verification process:
 1. Visit [Duffel's registration page](https://app.duffel.com/join)
