@@ -1,13 +1,15 @@
 # Find Flights MCP Server
 MCP server for searching and retrieving flight information using Duffel API.
 
+Say goodbye to endless calendar clicking and tab juggling. This tool lets you search flights naturally - just describe what you want in natural langauge. Find the best deals across multiple dates, compare flexible travel times, and explore complex routes through simple queries.
+
 ## Features
 - Search for flights between multiple destinations
 - Support for one-way, round-trip, and multi-city flight queries
 - Detailed flight offer information
 - Flexible search parameters (departure times, cabin class, number of passengers)
 - Automatic handling of flight connections
-
+- Search for flights within multiple days to find the best flight for your trip (slower)
 ## Prerequisites
 - Python 3.x
 - Duffel API Live Key
@@ -175,6 +177,7 @@ You can use these tools to find flights with various complexities:
 - "Search for a round-trip flight from LAX to London, departing Jan 8 and returning Jan 15"
 - "Plan a multi-city trip from New York to Paris on Jan 7, then to Rome on Jan 10, and back to New York on Jan 15"
 - "What is the cheapest flight from SFO to LAX from Jan 7 to Jan 15 for 2 adults in economy class?"
+- You can even search for flights within multuple days to find the best flight for your trip. Right now, the reccomendation is to only search for one-way or round-trip flights this way. Example: "Find the cheapest flight from SFO to LAX from Jan 7 to Jan 10 for 2 adults in economy class"
 
 ## Response Format
 The tools return JSON-formatted responses with:
