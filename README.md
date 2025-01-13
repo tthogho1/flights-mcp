@@ -13,10 +13,38 @@ MCP server for searching and retrieving flight information using Duffel API.
 - Duffel API Live Key
 
 ## Getting Your Duffel API Key
-1. Visit [Duffel Website](https://duffel.com)
-2. Create an account or log in
-3. Navigate to API settings
-4. Generate a new Live API key (there are two keys, one for testing and one for live, make sure to use the live key)
+Duffel requires account verification and payment information setup, but this MCP server only uses the API for searching flights - no actual bookings or charges will be made to your account.
+
+### Test Mode First (Recommended)
+You can start with a test API key (`duffel_test`) to try out the functionality with simulated data before going through the full verification process:
+1. Visit [Duffel's registration page](https://app.duffel.com/join)
+2. Create an account (you can select "Personal Use" for Company Name)
+3. Navigate to More > Developer to find your test API key
+
+### Getting a Live API Key
+To access real flight data, follow these steps:
+1. In the Duffel dashboard, toggle "Test Mode" off in the top left corner
+2. The verification process requires multiple steps - you'll need to toggle test mode off repeatedly:
+   - First toggle: Verify your email address
+   - Toggle again: Complete company information (Personal Use is fine)
+   - Toggle again: Add payment information (required by Duffel but NO CHARGES will be made by this MCP server)
+   - Toggle again: Complete any remaining verification steps
+   - Final toggle: Access live mode after clicking "Agree and Submit"
+3. Once fully verified, go to More > Developer > Create Live Token
+4. Copy your live API key
+
+💡 TIP: Each time you complete a verification step, you'll need to toggle test mode off again to proceed to the next step. Keep toggling until you've completed all requirements.
+
+⚠️ IMPORTANT NOTES:
+- Your payment information is handled directly by Duffel and is not accessed or stored by the MCP server
+- This MCP server is READ-ONLY - it can only search for flights, not book them
+- No charges will be made to your payment method through this integration
+- All sensitive information (including API keys) stays local to your machine
+- You can start with the test API key (`duffel_test`) to evaluate the functionality
+- The verification process may take some time - this is a standard Duffel requirement
+
+### Security Note
+This MCP server only uses Duffel's search endpoints and cannot make bookings or charges. Your payment information is solely for Duffel's verification process and is never accessed by or shared with the MCP server.
 
 ### Note on API Usage Limits
 - Check Duffel's current pricing and usage limits
