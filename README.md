@@ -6,7 +6,7 @@ While tools like Google Flights work great for simple trips, this tool shines wh
 
 - **Contextual Memory**: Claude remembers all your previous flight searches in the chat, so you don't need to keep multiple tabs open to compare prices
 - **Flexible Date Search**: Easily search across multiple days to find the best prices without manually checking each date
-- **Complex Itineraries**: Perfect for multi-city trips, one-stop flights, or when you need to compare different route options
+- **Complex Itineraries**: Perfect for multi-city trips, one-stop flights, or when you need to compare different route options you can just ask!
 - **Natural Conversation**: Just describe what you're looking for - no more clicking through calendar interfaces or juggling search parameters
 
 Think of it as having a travel agent in your chat who remembers everything you've discussed and can instantly search across dates and routes.
