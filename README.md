@@ -187,7 +187,7 @@ You can use these tools to find flights with various complexities:
 - "Search for a round-trip flight from LAX to London, departing Jan 8 and returning Jan 15"
 - "Plan a multi-city trip from New York to Paris on Jan 7, then to Rome on Jan 10, and back to New York on Jan 15"
 - "What is the cheapest flight from SFO to LAX from Jan 7 to Jan 15 for 2 adults in economy class?"
-- You can even search for flights within multuple days to find the best flight for your trip. Right now, the reccomendation is to only search for one-way or round-trip flights this way. Example: "Find the cheapest flight from SFO to LAX from Jan 7 to Jan 10 for 2 adults in economy class"
+- You can even search for flights within multiple days to find the best flight for your trip. Right now, the reccomendation is to only search for one-way or round-trip flights this way. Example: "Find the cheapest flight from SFO to LAX from Jan 7 to Jan 10 for 2 adults in economy class"
 
 ## Response Format
 The tools return JSON-formatted responses with:
