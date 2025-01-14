@@ -2,7 +2,8 @@
 MCP server for searching and retrieving flight information using Duffel API.
 
 ## How it Works
-![Group 20227](https://github.com/user-attachments/assets/fc2ae1b0-15a7-4003-9d0b-389a84db753f)
+![Group 20227](https://github.com/user-attachments/assets/6d9eba23-ab91-4372-a941-634c54608e65)
+
 
 ## Video Demo
 https://github.com/user-attachments/assets/c111aa4c-9559-4d74-a2f6-60e322c273d4
