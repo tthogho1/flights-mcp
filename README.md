@@ -92,13 +92,13 @@ Configuration file locations:
 Add the following configuration to your JSON file:
 ```json
 {
-    "find-flights-mcp": {
+    "flights-mcp": {
         "command": "uv",
         "args": [
             "--directory",
-            "/Users/YOUR_USERNAME/Code/find-flights-mcp",
+            "/Users/YOUR_USERNAME/Code/flights-mcp",
             "run",
-            "find-flights-mcp"
+            "flights-mcp"
         ],
         "env": {
             "DUFFEL_API_KEY_LIVE": "your_duffel_live_api_key_here"
