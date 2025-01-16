@@ -44,7 +44,7 @@ wheels = [
 ]
 
 [[package]]
-name = "find-flights-mcp"
+name = "flights-mcp"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
