@@ -1,5 +1,5 @@
 [project]
-name = "find-flights-mcp"
+name = "flights-mcp"
 version = "0.1.0"
 description = "Flight search MCP server using Duffel API"
 requires-python = ">=3.9"
@@ -11,7 +11,7 @@ dependencies = [
 license = "MIT"
 
 [project.scripts]
-find-flights-mcp = "flights:main"
+flights-mcp = "flights:main"
 
 [build-system]
 requires = ["hatchling"]
