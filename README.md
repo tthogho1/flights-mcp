@@ -84,7 +84,7 @@ npx -y @smithery/cli install @ravinahp/travel-mcp --client claude
 Clone the repository:
 ```bash
 git clone https://github.com/ravinahp/flights-mcp
-cd find-flights-mcp
+cd flights-mcp
 ```
 
 Install dependencies using uv:
