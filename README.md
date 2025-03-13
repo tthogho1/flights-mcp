@@ -1,4 +1,5 @@
-# Find Flights MCP Server
+# Find Flights MCP Server ![Option #1](https://github.com/user-attachments/assets/e35a18d2-300b-4cc0-b49c-53ac65974456)
+
 [![smithery badge](https://smithery.ai/badge/@ravinahp/travel-mcp)](https://smithery.ai/server/@ravinahp/travel-mcp)
 MCP server for searching and retrieving flight information using Duffel API.
 
