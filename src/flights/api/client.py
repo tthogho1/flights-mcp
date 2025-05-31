@@ -20,7 +20,7 @@ class DuffelClient:
         self.headers = {
             "Accept": "application/json",
             "Accept-Encoding": "gzip",
-            "Duffel-Version": "v1",
+            "Duffel-Version": "v2",
             "Authorization": f"Bearer {self._token}",
             "Content-Type": "application/json"
         }
